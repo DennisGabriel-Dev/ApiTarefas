@@ -14,9 +14,12 @@ public class TarefaService : ITarefaService
 
     private AppDbContext _db;
 
-    public List<Tarefa> Lista()
+    public List<Tarefa> Lista(int page = 1)
     {
-        return _db.Tarefas.ToList();
+        if (page < 1) page = 1;
+        int limit = 10;
+        int offset = (page - 1) * limit;
+        return _db.Tarefas.Skip(offset).Take(limit).ToList();
     }
 
     public Tarefa Incluir(TarefaDto tarefaDto)

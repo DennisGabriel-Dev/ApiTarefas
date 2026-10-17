@@ -16,9 +16,9 @@ public class TarefasController : ControllerBase
     private ITarefaService _service;
 
     [HttpGet]
-    public IActionResult Index()
+    public IActionResult Index(int page = 1)
     {
-        var tarefas = _service.Lista();
+        var tarefas = _service.Lista(page);
         return StatusCode(200, tarefas);
     }
 

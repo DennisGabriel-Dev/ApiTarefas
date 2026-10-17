@@ -5,7 +5,7 @@ using ApiTarefas.Dto;
 public interface ITarefaService
 {
 
-    public List<Tarefa> Lista();
+    public List<Tarefa> Lista(int page);
     public Tarefa Incluir(TarefaDto tarefaDto);
     public Tarefa? BuscarPorId(int id);
     public Tarefa Atualizar(int id, TarefaDto tarefaDto);
