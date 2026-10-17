@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using ApiTarefas.Dto;
-using ApiTarefas.Services;
+using ApiTarefas.Services.Interfaces;
 using ApiTarefas.Models.Errors;
 namespace ApiTarefas.Controllers;
 
@@ -8,12 +8,12 @@ namespace ApiTarefas.Controllers;
 [Route("/tarefas")]
 public class TarefasController : ControllerBase
 {
-    public TarefasController(TarefaService tarefaService)
+    public TarefasController(ITarefaService tarefaService)
     {
         _service = tarefaService;
     }
 
-    private TarefaService _service;
+    private ITarefaService _service;
 
     [HttpGet]
     public IActionResult Index()

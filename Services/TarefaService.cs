@@ -3,8 +3,9 @@ using ApiTarefas.Data;
 using ApiTarefas.Models;
 using ApiTarefas.Models.Errors;
 using ApiTarefas.Dto;
+using ApiTarefas.Services.Interfaces;
 
-public class TarefaService
+public class TarefaService : ITarefaService
 {
     public TarefaService(AppDbContext db)
     {

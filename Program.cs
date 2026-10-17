@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using ApiTarefas.Data;
 using ApiTarefas.Services;
+using ApiTarefas.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, new MariaDbServerVersion(new Version(10, 11))));
 
-builder.Services.AddScoped<TarefaService>();
+builder.Services.AddScoped<ITarefaService, TarefaService>();
 
 var app = builder.Build();
 
