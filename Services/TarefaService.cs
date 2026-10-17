@@ -50,6 +50,8 @@ public class TarefaService : ITarefaService
             throw new TarefaError("O título da tarefa é obrigatório.");
 
         var tarefaDb = BuscarPorId(id);
+         if (tarefaDb == null)
+            throw new TarefaError("Tarefa não encontrada.");
 
         tarefaDb.Titulo = tarefaDto.Titulo;
         tarefaDb.Descricao = tarefaDto.Descricao;
