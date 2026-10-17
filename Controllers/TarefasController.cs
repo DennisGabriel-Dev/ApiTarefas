@@ -1,96 +1,81 @@
 using Microsoft.AspNetCore.Mvc;
-using ApiTarefas.ModelViews;
-using ApiTarefas.Data;
-using ApiTarefas.Models;
 using ApiTarefas.Dto;
+using ApiTarefas.Services;
+using ApiTarefas.Models.Errors;
 namespace ApiTarefas.Controllers;
 
 [ApiController]
 [Route("/tarefas")]
 public class TarefasController : ControllerBase
 {
-    public TarefasController(AppDbContext dbContext)
+    public TarefasController(TarefaService tarefaService)
     {
-        _db = dbContext;
+        _service = tarefaService;
     }
 
-    private AppDbContext _db;
+    private TarefaService _service;
 
     [HttpGet]
     public IActionResult Index()
     {
-        var tarefas = _db.Tarefas.ToList();
+        var tarefas = _service.Lista();
         return StatusCode(200, tarefas);
     }
 
     [HttpPost]
     public IActionResult Create([FromBody] TarefaDto tarefaDto)
     {
-        if (string.IsNullOrEmpty(tarefaDto.Titulo))
+        try 
         {
-            return StatusCode(400, new ErrorView
-            {
-                Mensagem = "O título da tarefa é obrigatório.",
-            });
+            var tarefa = _service.Incluir(tarefaDto);
+            return StatusCode(201, tarefa);
+        } catch (TarefaError e)
+        {
+            return StatusCode(400, new TarefaError(e.Message));
         }
-        var tarefa = new Tarefa
-        {
-            Titulo = tarefaDto.Titulo,
-            Descricao = tarefaDto.Descricao,
-            Concluida = tarefaDto.Concluida
-        };
-        _db.Tarefas.Add(tarefa);
-        _db.SaveChanges();
-
-        return StatusCode(201, tarefa);
     }
 
     [HttpPut("{id}")]
     public IActionResult Update([FromRoute] int id, [FromBody] TarefaDto tarefaDto)
     {
-        if (string.IsNullOrEmpty(tarefaDto.Titulo))
+        try
         {
-            return StatusCode(400, new ErrorView
-            {
-                Mensagem = "O título da tarefa é obrigatório.",
-            });
-        }
-        var tarefaDb = _db.Tarefas.Find(id);
-        if (tarefaDb == null)
+            var tarefa = _service.Atualizar(id ,tarefaDto);
+            return StatusCode(201, tarefa);
+        } 
+        catch ( TarefaError e)
         {
-            return StatusCode(404, new ErrorView
-            {
-                Mensagem = "Tarefa não encontrada.",
-            });
+            return StatusCode(400, new TarefaError(e.Message));   
         }
-        tarefaDb.Titulo = tarefaDto.Titulo;
-        tarefaDb.Descricao = tarefaDto.Descricao;
-        tarefaDb.Concluida = tarefaDto.Concluida;
-
-        _db.Tarefas.Update(tarefaDb);
-        _db.SaveChanges();
-
-        return StatusCode(201, tarefaDb);
     }
 
 
     [HttpDelete("{id}")]
     public IActionResult Destroy([FromRoute] int id)
     {
-        var tarefaDb = _db.Tarefas.Find(id);
-        if (tarefaDb == null)
+        try
         {
-            return StatusCode(404, new ErrorView
-            {
-                Mensagem = "Tarefa não encontrada.",
-            });
+            _service.Excluir(id);
+            return StatusCode(204);
+        } catch (TarefaError e)
+        {
+            return StatusCode(400, new TarefaError(e.Message));
         }
-    
-        _db.Tarefas.Remove(tarefaDb);
-        _db.SaveChanges();
 
-        return StatusCode(204);
     }
 
 
+    [HttpGet("{id}")]
+    public IActionResult Show([FromRoute] int id)
+    {
+        try
+        {
+            var tarefa = _service.Show(id);
+            return StatusCode(200, tarefa);
+        } catch (TarefaError e)
+        {
+            return StatusCode(400, new TarefaError(e.Message));
+        }
+
+    }
 }
